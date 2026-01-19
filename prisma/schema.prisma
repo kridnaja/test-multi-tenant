@@ -13,3 +13,36 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+
+model Product {
+  id        String @id
+  tenantId  String
+  name      String
+  price     Float
+
+  Inventory Inventory?
+  Sale      Sale[]
+}
+
+model Inventory {
+  tenantId  String
+  productId String
+  quantity  Int
+
+  Product Product @relation(fields: [productId], references: [id])
+
+  @@id([tenantId, productId])
+}
+
+model Sale {
+  id        String @id
+  tenantId  String
+  productId String
+  quantity  Int
+  price     Float
+  total     Float
+  createdAt DateTime
+
+  Product Product @relation(fields: [productId], references: [id])
+}
