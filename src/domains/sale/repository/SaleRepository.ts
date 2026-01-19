@@ -1,6 +1,6 @@
 import { Sale } from "../entity/Sale"
 
 export type SaleRepository = {
-    findByTenant: (tenantId: string) => Promise<Sale[]>
+    findByTenantIdAndProductId: (tenantId: string, productId: string) => Promise<Sale[]>
     save: (sale: Sale) => Promise<void>
 }

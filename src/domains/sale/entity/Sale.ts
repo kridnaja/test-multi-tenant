@@ -16,6 +16,18 @@ export const createSale = (
   price: number,
   createdAt: Date = new Date()
 ): Sale => {
+  if (quantity <= 0) {
+    throw new Error("Sale quantity must be positive")
+  }
+
+  if (price < 0) {
+    throw new Error("Sale price must be >= 0")
+  }
+
+  if (createdAt.getTime() > Date.now()) {
+    throw new Error("Sale date cannot be in the future")
+  }
+
   const saleId = id
   const ownerTenantId = tenantId
   const soldProductId = productId

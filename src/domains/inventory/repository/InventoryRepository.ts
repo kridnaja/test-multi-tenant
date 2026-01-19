@@ -1,7 +1,8 @@
 import { Inventory } from "../entity/Inventory"
 
 export type InventoryRepository = {
-  findByTenantAndProduct: (
+
+  findByTenantIdAndProductId: (
     tenantId: string,
     productId: string
   ) => Promise<Inventory | null>

@@ -12,9 +12,13 @@ export const createInventory = (
   productId: string,
   quantity: number
 ): Inventory => {
+  if (quantity < 0) {
+    throw new Error("Initial quantity cannot be negative")
+  }
+
   const ownerTenantId = tenantId
   const ownerProductId = productId
-  let currentQuantity = quantity
+  const currentQuantity = quantity
 
   return {
     getTenantId: () => ownerTenantId,
@@ -22,24 +26,30 @@ export const createInventory = (
     getQuantity: () => currentQuantity,
 
     increase: (amount: number) => {
-      currentQuantity += amount
+      if (amount <= 0) {
+        throw new Error("Amount must be positive")
+      }
+
       return createInventory(
         ownerTenantId,
         ownerProductId,
-        currentQuantity
+        currentQuantity + amount
       )
     },
 
     decrease: (amount: number) => {
+      if (amount <= 0) {
+        throw new Error("Amount must be positive")
+      }
+
       if (currentQuantity - amount < 0) {
         throw new Error("Inventory cannot be negative")
       }
 
-      currentQuantity -= amount
       return createInventory(
         ownerTenantId,
         ownerProductId,
-        currentQuantity
+        currentQuantity - amount
       )
     }
   }

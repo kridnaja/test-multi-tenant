@@ -1,7 +1,12 @@
 import { Product } from "../entity/Product"
 
 export type ProductRepository = {
-  findById: (id: string) => Promise<Product | null>
-  findByTenant: (tenantId: string) => Promise<Product[]>
+
+  findByTenantIdAndProductId: (
+    tenaneId: string,
+    productId: string
+  ) => Promise<Product | null>
+
+
   save: (product: Product) => Promise<void>
 }
