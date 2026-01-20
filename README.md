@@ -1,5 +1,5 @@
-#########################################
-แนวคิดและการออกแบบระบบ (System Design Overview)
+
+**แนวคิดและการออกแบบระบบ (System Design Overview)**
 
 โปรเจกต์นี้เป็น Backend-only system พัฒนาด้วย
 Express.js, Prisma ORM, TypeScript และ MySQL
@@ -77,7 +77,7 @@ Database sharding
 
 โดยไม่ต้องรื้อหรือเขียน business logic ใหม่ทั้งหมด
 
-การตอบโจทย์ Core Requirements
+**การตอบโจทย์ Core Requirements**
 1. Multi-Tenant Model
 
 รองรับหลายบริษัท (Multi-Tenant SaaS)
@@ -136,9 +136,9 @@ tenant isolation
 
 โครงสร้างที่เข้าใจง่าย ขยายต่อได้ และอธิบายเหตุผลได้ชัดเจน
 
-#########################################
 
-Trade-offs & Limitations
+
+**Trade-offs & Limitations**
 1. Single Database + tenantId
 
 ข้อดี
