@@ -43,7 +43,7 @@ export const createInventory = (
       }
 
       if (currentQuantity - amount < 0) {
-        throw new Error("Inventory cannot be negative")
+        throw new Error("Insufficient stock")
       }
 
       return createInventory(
