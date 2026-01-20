@@ -1,64 +1,49 @@
-import { prisma } from "../prisma/client"
+import { PrismaClient } from "../../generated/prisma/client"
 import { ProductRepository } from "../../domains/product/repository/ProductRepository"
-import { createProduct } from "../../domains/product/entity/Product"
+import { Product, createProduct } from "../../domains/product/entity/Product"
 
-export const prismaProductRepository: ProductRepository = {
+export const createPrismaProductRepository = (
+  prisma: PrismaClient
+): ProductRepository => {
 
-  // 1️⃣ Generic find (use carefully)
-  findById: async (id) => {
-    const record = await prisma.product.findUnique({
-      where: { id }
-    })
 
-    if (!record) return null
 
-    return createProduct(
-      record.id,
-      record.tenantId,
-      record.name,
-      record.price
-    )
-  },
+    const toDomain = (record: {
+        id: string
+        tenantId: string
+        name: string
+        price: number
+      }): Product =>
+        createProduct(
+          record.id,
+          record.tenantId,
+          record.name,
+          record.price
+        )
+      
 
-  // 2️⃣ List all products of a tenant
-  findByTenant: async (tenantId) => {
-    const records = await prisma.product.findMany({
-      where: { tenantId }
-    })
-
-    return records.map((record) =>
-      createProduct(
-        record.id,
-        record.tenantId,
-        record.name,
-        record.price
-      )
-    )
-  },
-
-  // 3️⃣ Strict tenant-aware lookup
-  findByTenantAndId: async (tenantId, productId) => {
+  const findByTenantIdAndProductId = async (
+    tenantId: string,
+    productId: string
+  ): Promise<Product | null> => {
     const record = await prisma.product.findFirst({
       where: {
-        id: productId,
-        tenantId
+        tenantId,
+        id: productId
       }
     })
 
-    if (!record) return null
+    return record ? toDomain(record) : null
+  }
 
-    return createProduct(
-      record.id,
-      record.tenantId,
-      record.name,
-      record.price
-    )
-  },
-
-  // 4️⃣ Persist product
-  save: async (product) => {
+  const save = async (product: Product): Promise<void> => {
     await prisma.product.upsert({
-      where: { id: product.getId() },
+      where: {
+        tenantId_id: {
+          tenantId: product.getTenantId(),
+          id: product.getId()
+        }
+      },
       update: {
         name: product.getName(),
         price: product.getPrice()
@@ -70,5 +55,10 @@ export const prismaProductRepository: ProductRepository = {
         price: product.getPrice()
       }
     })
+  }
+
+  return {
+    findByTenantIdAndProductId,
+    save
   }
 }

@@ -10,39 +10,79 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id        String   @id
+  name      String
+  createdAt DateTime @default(now())
+
+  products   Product[]
+  inventories Inventory[]
+  sales      Sale[]
+  users User[]
 }
 
 
 model Product {
-  id        String @id
+  id        String
   tenantId  String
   name      String
   price     Float
 
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   Inventory Inventory?
   Sale      Sale[]
+
+  @@id([tenantId, id])
 }
+
 
 model Inventory {
   tenantId  String
   productId String
   quantity  Int
 
-  Product Product @relation(fields: [productId], references: [id])
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  Product Product @relation(fields: [tenantId, productId], references: [tenantId, id])
 
   @@id([tenantId, productId])
 }
 
+
 model Sale {
-  id        String @id
+  id        String
   tenantId  String
   productId String
   quantity  Int
   price     Float
   total     Float
-  createdAt DateTime
+  createdAt DateTime @default(now())
 
-  Product Product @relation(fields: [productId], references: [id])
+  tenant  Tenant  @relation(fields: [tenantId], references: [id])
+  Product Product @relation(fields: [tenantId, productId], references: [tenantId, id])
+
+  @@id([tenantId, id])
 }
+
+enum UserRole {
+  admin
+  user
+}
+
+model User {
+  id        String
+  tenantId  String
+  email     String
+  role      UserRole
+  createdAt DateTime @default(now())
+
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@id([tenantId, id])
+  @@unique([tenantId, email])
+}
+
+

@@ -1,24 +1,35 @@
-import { prisma } from "../prisma/client";
-import { TenantRepository } from "../../domains/tenant/repository/TenantRepository";
-import { createTenant } from "../../domains/tenant/entity/Tenant";
+import { PrismaClient } from "../../generated/prisma/client"
+import { TenantRepository } from "../../domains/tenant/repository/TenantRepository"
+import { Tenant, createTenant } from "../../domains/tenant/entity/Tenant"
 
-export const prismaTenantRepository: TenantRepository = {
-  findById: async (id) => {
-    const record = await prisma.tenant.findUnique({
-      where: { id }
-    })
+export const createPrismaTenantRepository = (
+  prisma: PrismaClient
+): TenantRepository => {
 
-    if (!record) return null
-
-    return createTenant(
+  const toDomain = (record: {
+    id: string
+    name: string
+  }): Tenant =>
+    createTenant(
       record.id,
       record.name
     )
-  },
 
-    save: async (tenant) => {
+  const findById = async (
+    tenantId: string
+  ): Promise<Tenant | null> => {
+    const record = await prisma.tenant.findUnique({
+      where: { id: tenantId }
+    })
+
+    return record ? toDomain(record) : null
+  }
+
+  const save = async (tenant: Tenant): Promise<void> => {
     await prisma.tenant.upsert({
-      where: { id: tenant.getId() },
+      where: {
+        id: tenant.getId()
+      },
       update: {
         name: tenant.getName()
       },
@@ -28,8 +39,9 @@ export const prismaTenantRepository: TenantRepository = {
       }
     })
   }
+
+  return {
+    findById,
+    save
+  }
 }
-
-
-
-
