@@ -12,6 +12,7 @@ export const createInventory = (
   productId: string,
   quantity: number
 ): Inventory => {
+  
   if (quantity < 0) {
     throw new Error("Initial quantity cannot be negative")
   }

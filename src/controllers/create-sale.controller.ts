@@ -1,9 +1,6 @@
 import { Request, Response } from "express"
 import { prisma } from "../intrastructures/prisma/client"
-import { createSaleUseCase } from "../applications/usecases/create-sale.usecase"
-import { createPrismaProductRepository } from "../intrastructures/repositories/prisma-product.repository"
-import { createPrismaInventoryRepository } from "../intrastructures/repositories/prisma-inventory.repository"
-import { createPrismaSaleRepository } from "../intrastructures/repositories/prisma-sale.repository"
+import { createSaleService } from "../applications/services/create-sale.service"
 
 export const createSaleController = async (
   req: Request,
@@ -11,6 +8,7 @@ export const createSaleController = async (
 ) => {
   try {
     const tenantId = req.tenantId
+    console.log(req.tenantId)
     if (!tenantId) {
       return res.status(400).json({ message: "Missing tenant id" })
     }
@@ -20,15 +18,10 @@ export const createSaleController = async (
       return res.status(400).json({ message: "Invalid input" })
     }
 
-    const sale = await prisma.$transaction(async (tx) => {
-      const productRepo = createPrismaProductRepository(tx)
-      const inventoryRepo = createPrismaInventoryRepository(tx)
-      const saleRepo = createPrismaSaleRepository(tx)
-
-      return createSaleUseCase(
-        { tenantId, productId, quantity },
-        { productRepo, inventoryRepo, saleRepo }
-      )
+    const sale = await createSaleService(prisma, {
+      tenantId,
+      productId,
+      quantity
     })
 
     return res.status(201).json({
