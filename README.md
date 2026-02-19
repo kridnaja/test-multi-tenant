@@ -2,9 +2,8 @@
 **แนวคิดและการออกแบบระบบ (System Design Overview)**
 
 โปรเจกต์นี้เป็น Backend-only system พัฒนาด้วย
-Express.js, Prisma ORM, TypeScript และ MySQL
+Express.js, Prisma ORM, TypeScript และ Mysql
 
-จากการสัมภาษณ์รอบแรก ผมเข้าใจว่าองค์กรให้ความสำคัญกับ
 แนวคิดการออกแบบระบบและความถูกต้องของ business logic
 มากกว่าการเลือกภาษา หรือ framework ใดเป็นพิเศษ
 
